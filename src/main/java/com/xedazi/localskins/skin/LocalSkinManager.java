@@ -59,7 +59,7 @@ public final class LocalSkinManager {
 
     public static Path renameSkin(Path file, String newName) throws Exception {
         if (file == null || !Files.isRegularFile(file)) throw new IllegalArgumentException("Select a skin first");
-        String safe = newName == null ? "" : newName.trim().replaceAll("(?i)\.png$", "").replaceAll("[^a-zA-Z0-9 _.-]", "_");
+        String safe = newName == null ? "" : newName.trim().replaceAll("(?i)\\.png$", "").replaceAll("[^a-zA-Z0-9 _.-]", "_");
         if (safe.isEmpty()) throw new IllegalArgumentException("Enter a new file name");
         if (safe.length() > 80) safe = safe.substring(0, 80);
         Path target = getSkinDirectory().resolve(safe + ".png");
@@ -87,7 +87,7 @@ public final class LocalSkinManager {
             connection.connect();
             if (connection.getResponseCode() < 200 || connection.getResponseCode() >= 300) throw new IllegalArgumentException("Download failed: HTTP " + connection.getResponseCode());
             String pathPart = new URL(connection.getURL().toString()).getPath();
-            String name = pathPart.substring(pathPart.lastIndexOf('/') + 1).replaceAll("(?i)\.png$", "");
+            String name = pathPart.substring(pathPart.lastIndexOf('/') + 1).replaceAll("(?i)\\.png$", "");
             name = name.replaceAll("[^a-zA-Z0-9 _.-]", "_").trim();
             if (name.isEmpty()) name = "downloaded_skin";
             if (name.length() > 70) name = name.substring(0, 70);
@@ -130,7 +130,7 @@ public final class LocalSkinManager {
                 legacy.copyRect(40, 16, 16, 16, 32, 48, true, false);
                 image.close(); image = legacy;
             }
-            String base = file.getFileName().toString().replaceAll("(?i)\.png$", "").replaceAll("[^a-zA-Z0-9_./-]", "_").toLowerCase(Locale.ROOT);
+            String base = file.getFileName().toString().replaceAll("(?i)\\.png$", "").replaceAll("[^a-zA-Z0-9_./-]", "_").toLowerCase(Locale.ROOT);
             Identifier id = new Identifier(NAMESPACE, "skins/" + base);
             MinecraftClient client = MinecraftClient.getInstance();
             Identifier previous = selectedTexture;
