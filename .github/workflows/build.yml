@@ -11,27 +11,46 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: localskins
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+
+      - name: Show repository files
+        run: |
+          echo "Repository root:"
+          ls -la
+          echo "Searching for build.gradle:"
+          find . -name build.gradle -o -name build.gradle.kts
+
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '7.3.3'
+
       - name: Build mod
-        run: gradle build --no-daemon
+        run: |
+          BUILD_FILE=$(find . -name build.gradle -type f | head -n 1)
+          if [ -z "$BUILD_FILE" ]; then
+            echo "ERROR: build.gradle not found. Upload the mod source files."
+            exit 1
+          fi
+          PROJECT_DIR=$(dirname "$BUILD_FILE")
+          echo "Building project in: $PROJECT_DIR"
+          cd "$PROJECT_DIR"
+          gradle build --no-daemon
+
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
           name: LocalSkins-1.0
-          path: localskins/build/libs/*.jar
+          path: |
+            **/build/libs/*.jar
           if-no-files-found: error
           retention-days: 14
