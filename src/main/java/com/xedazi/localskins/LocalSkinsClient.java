@@ -17,17 +17,14 @@ public final class LocalSkinsClient implements ClientModInitializer {
     public void onInitializeClient() {
         LocalSkinManager.initialize();
         openMenuKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.localskins.open", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "category.localskins"));
-
+                "key.localskins.open", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F7, "category.localskins"));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openMenuKey.wasPressed()) {
                 if (client.player != null && client.currentScreen == null) {
-                    client.openScreen(new SkinSelectScreen(client.currentScreen));
+                    client.openScreen(new SkinSelectScreen(null));
                 }
             }
         });
-
-
     }
 
     public static MinecraftClient client() { return MinecraftClient.getInstance(); }

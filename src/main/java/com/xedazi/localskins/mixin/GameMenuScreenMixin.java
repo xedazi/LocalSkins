@@ -13,30 +13,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameMenuScreen.class)
 public abstract class GameMenuScreenMixin extends Screen {
-
-    protected GameMenuScreenMixin() {
-        super(new LiteralText("Game Menu"));
-    }
+    protected GameMenuScreenMixin() { super(new LiteralText("Game Menu")); }
 
     @Inject(method = "init", at = @At("TAIL"))
     private void localskins$addSkinButton(CallbackInfo ci) {
-        int buttonWidth = 120;
-        int buttonHeight = 20;
-        // Keep the custom button in the otherwise empty bottom area.
-        // The vanilla pause-menu rows are around height / 4, so placing it there
-        // causes it to overlap Settings / Open to LAN on common GUI scales.
-        int x = this.width / 2 - buttonWidth / 2;
-        int y = this.height - buttonHeight - 8;
-
-        this.addButton(new ButtonWidget(
-                x,
-                y,
-                buttonWidth,
-                buttonHeight,
-                new LiteralText("Local Skins"),
-                button -> MinecraftClient.getInstance().openScreen(
-                        new SkinSelectScreen((Screen) (Object) this)
-                )
-        ));
+        int w = 120;
+        int x = this.width / 2 - w / 2;
+        // Place in the gap between the settings/LAN row and Save & Quit.
+        int y = this.height / 4 + 120;
+        this.addButton(new ButtonWidget(x, y, w, 20, new LiteralText("Local Skins"),
+                button -> MinecraftClient.getInstance().openScreen(new SkinSelectScreen((Screen) (Object) this))));
     }
 }
