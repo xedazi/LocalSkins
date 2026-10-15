@@ -22,6 +22,8 @@ public final class LocalSkinManager {
     private static Identifier selectedTexture;
     private static String selectedModel = "default";
     private static String selectedFileName;
+    private static Path selectedPath;
+    private static long selectedLastModified = -1L;
 
     private LocalSkinManager() { }
 
@@ -51,7 +53,24 @@ public final class LocalSkinManager {
     }
 
     public static boolean select(Path file) {
-        if (file == null || !Files.isRegularFile(file) || !file.toAbsolutePath().normalize().getParent().equals(skinDirectory.toAbsolutePath().normalize())) return false;
+        if (skinDirectory == null) initialize();
+        if (file == null || !Files.isRegularFile(file)
+                || !file.toAbsolutePath().normalize().getParent()
+                    .equals(skinDirectory.toAbsolutePath().normalize())) {
+            return false;
+        }
+
+        try {
+            long modified = Files.getLastModifiedTime(file).toMillis();
+            if (file.toAbsolutePath().normalize().equals(selectedPath)
+                    && modified == selectedLastModified
+                    && selectedTexture != null) {
+                return true; // Already loaded; don't decode/register it again.
+            }
+        } catch (IOException ignored) {
+            return false;
+        }
+
         NativeImage image = null;
         try (InputStream input = Files.newInputStream(file)) {
             image = NativeImage.read(input);
@@ -71,9 +90,19 @@ public final class LocalSkinManager {
             }
             String base = file.getFileName().toString().replaceAll("(?i)\\.png$", "").replaceAll("[^a-zA-Z0-9_./-]", "_").toLowerCase(Locale.ROOT);
             Identifier id = new Identifier(NAMESPACE, "skins/" + base);
-            MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(image));
+            MinecraftClient client = MinecraftClient.getInstance();
+            Identifier previousTexture = selectedTexture;
+            client.getTextureManager().registerTexture(id, new NativeImageBackedTexture(image));
             image = null; // TextureManager owns it now.
+
+            // Only keep the currently selected local texture in memory.
+            if (previousTexture != null && !previousTexture.equals(id)) {
+                client.getTextureManager().destroyTexture(previousTexture);
+            }
+
             selectedTexture = id;
+            selectedPath = file.toAbsolutePath().normalize();
+            selectedLastModified = Files.getLastModifiedTime(file).toMillis();
             selectedFileName = file.getFileName().toString();
             String lower = selectedFileName.toLowerCase(Locale.ROOT);
             selectedModel = (lower.contains("slim") || lower.contains("alex")) ? "slim" : "default";
@@ -87,8 +116,13 @@ public final class LocalSkinManager {
     }
 
     public static void clearSelection() {
+        if (selectedTexture != null && MinecraftClient.getInstance() != null) {
+            MinecraftClient.getInstance().getTextureManager().destroyTexture(selectedTexture);
+        }
         selectedTexture = null;
         selectedFileName = null;
+        selectedPath = null;
+        selectedLastModified = -1L;
         selectedModel = "default";
     }
 }

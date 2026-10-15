@@ -22,8 +22,11 @@ public abstract class GameMenuScreenMixin extends Screen {
     private void localskins$addSkinButton(CallbackInfo ci) {
         int buttonWidth = 120;
         int buttonHeight = 20;
+        // Keep the custom button in the otherwise empty bottom area.
+        // The vanilla pause-menu rows are around height / 4, so placing it there
+        // causes it to overlap Settings / Open to LAN on common GUI scales.
         int x = this.width / 2 - buttonWidth / 2;
-        int y = this.height / 4 + 72;
+        int y = this.height - buttonHeight - 8;
 
         this.addButton(new ButtonWidget(
                 x,
