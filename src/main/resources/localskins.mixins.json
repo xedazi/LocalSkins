@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.xedazi.localskins.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": ["AbstractClientPlayerEntityMixin", "GameMenuScreenMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

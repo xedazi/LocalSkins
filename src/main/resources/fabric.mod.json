@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "localskins",
+  "version": "${version}",
+  "name": "LocalSkins",
+  "description": "Client-side local skin selector for Minecraft 1.16.5.",
+  "authors": ["xedazi"],
+  "environment": "client",
+  "entrypoints": { "client": ["com.xedazi.localskins.LocalSkinsClient"] },
+  "mixins": ["localskins.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.12.0",
+    "minecraft": "1.16.5",
+    "java": ">=8",
+    "fabric": "*"
+  }
+}
