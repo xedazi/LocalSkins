@@ -20,8 +20,8 @@ public abstract class GameMenuScreenMixin extends Screen {
         int w = 120;
         int x = this.width / 2 - w / 2;
         // Place in the gap between the settings/LAN row and Save & Quit.
-        int y = Math.min(this.height / 4 + 144, this.height - 24);
-        this.addButton(new ButtonWidget(x, y, w, 20, new LiteralText("Local Skins"),
+        int y = Math.min(this.height / 4 + 164, this.height - 24);
+        this.addButton(new ButtonWidget(x, y, w, 20, new net.minecraft.text.TranslatableText("screen.localskins.open"),
                 button -> MinecraftClient.getInstance().openScreen(new SkinSelectScreen((Screen) (Object) this))));
     }
 }
