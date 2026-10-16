@@ -103,6 +103,11 @@ public final class LocalSkinManager {
                 }
                 byte[] data = buffer.toByteArray();
                 if (data.length < 8 || data[0] != (byte)137 || data[1] != 80 || data[2] != 78 || data[3] != 71) throw new IllegalArgumentException("Link did not return a PNG image; use a direct PNG URL");
+                try (NativeImage check = NativeImage.read(new java.io.ByteArrayInputStream(data))) {
+                    if (check.getWidth() != 64 || (check.getHeight() != 64 && check.getHeight() != 32)) {
+                        throw new IllegalArgumentException("Skin PNG must be 64x64 or 64x32");
+                    }
+                }
                 Files.write(target, data);
             }
             return target;
@@ -126,8 +131,8 @@ public final class LocalSkinManager {
                 NativeImage legacy = new NativeImage(64, 64, true);
                 for (int y = 0; y < 32; y++) for (int x = 0; x < 64; x++) legacy.setPixelColor(x, y, image.getPixelColor(x, y));
                 // Legacy 64x32 skins have no separate left limbs. Mirror the right limbs into modern left-limb UV areas.
-                legacy.copyRect(0, 16, 16, 16, 16, 48, true, false);
-                legacy.copyRect(40, 16, 16, 16, 32, 48, true, false);
+                legacy.copyRect(0, 16, 0, 48, 16, 16, true, false);
+                legacy.copyRect(40, 16, 32, 48, 16, 16, true, false);
                 image.close(); image = legacy;
             }
             String base = file.getFileName().toString().replaceAll("(?i)\\.png$", "").replaceAll("[^a-zA-Z0-9_./-]", "_").toLowerCase(Locale.ROOT);
