@@ -130,8 +130,8 @@ public final class SkinSelectScreen extends Screen {
                     if (LocalSkinManager.select(selectedFile)) status = "Applied: " + selectedFile.getFileName();
                     else status = "Invalid PNG: expected 64x64 or 64x32";
                     renameField.setText(selectedFile.getFileName().toString().replaceAll("(?i)\\.png$", ""));
-                    renameField.setFocused(true);
-                    renameField.setCursorToEnd(false);
+                    this.setInitialFocus(renameField);
+                    renameField.setCursorToEnd();
                     status = "Selected: edit the name above, then press Rename";
                     return true;
                 }
